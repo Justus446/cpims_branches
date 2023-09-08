@@ -1,0 +1,441 @@
+{% extends 'base.html' %}
+{% load app_filters %}
+{% load static %}
+{% block page_title %} New Graduation Tool {% endblock %}
+{% block style_code %}
+<link href="{% static 'plugins/parsley/src/parsley.css' %}" rel="stylesheet" />
+<link href="{% static 'plugins/bootstrap-datepicker/css/datepicker3.css' %}" rel="stylesheet" />
+<link href="{% static 'plugins/bootstrap-wizard/css/bwizard.min.css' %}" rel="stylesheet" />
+<link href="{% static 'plugins/bootstrap-multiselect/dist/css/bootstrap-multiselect.css' %}" rel="stylesheet">
+<style type="text/css">
+.dialog_paragraph {
+  color: #f00;
+}
+</style>
+{% endblock %}
+
+{% block javascript_code%}
+{% endblock javascript_code%}
+
+{% block primary %}
+<!-- begin breadcrumb -->
+<div>
+    <h1>
+        Graduation Monitoring Tool for OVC Households
+    </h1>
+</div>
+
+<div style="overflow-x: auto; min-height: 300px;">
+    <div class="panel-body">
+        <form class="form-horizontal form-bordered" action="." method="POST" data-parsley-validate="true"
+            name="form-wizard-hhva" id="new_hhva">
+            {% csrf_token %}
+            <div id="wizard-hhva">
+                <ol>
+
+                    <li>
+                        Healthy
+                        <small>Healthy</small>
+                    </li>
+                    <li>
+                        Stable
+                        <small>Stable</small>
+                    </li>
+                    <li>
+                        Safe
+                        <small>Safe</small>
+                    </li>
+                    <li>
+                        Schooled
+                        <small>Schooled</small>
+                    </li>
+                    
+
+
+
+                    <!--<li>-->
+                        <!--Goals-->
+                        <!--<small>goals</small>-->
+                    <!--</li>-->
+
+                </ol>
+
+                {% comment %} {{ form.person }}
+                {{ form.household_id }} {% endcomment %}
+
+
+
+
+
+
+
+
+
+                {% comment %} <table class="table table-bordered">
+                    <thead>
+                      <tr>
+                        <th scope="col">Healthy</th>
+                        <th scope="col">Month 1</th>
+                        <th scope="col">Month 2</th>
+                        <th scope="col">Month 3</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <th scope="row">
+                            <h3 style="margin-top: 0;color:#55518a"> Benchmark 1: <small>All children, adolescents, and caregivers in the household have known HIV status or a test is not required based on risk assessment </small></h3>
+                        </th>
+                        <td>                            
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="option1">
+                                <label class="form-check-label" for="inlineRadio1">Yes</label>
+                              </div>
+                              <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="option2">
+                                <label class="form-check-label" for="inlineRadio2">No</label>
+                              </div></td>
+                        <td>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="option1">
+                                <label class="form-check-label" for="inlineRadio1">Yes</label>
+                              </div>
+                              <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="option2">
+                                <label class="form-check-label" for="inlineRadio2">No</label>
+                              </div></td>
+                        </td>
+                        <td>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="option1">
+                                <label class="form-check-label" for="inlineRadio1">Yes</label>
+                              </div>
+                              <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="option2">
+                                <label class="form-check-label" for="inlineRadio2">No</label>
+                              </div></td>
+                        </td>
+                      </tr>
+                      
+                    </tbody>
+
+
+                    <tbody>
+                        <tr>
+                          <th scope="row">
+                            <h3 style="margin-top: 0;color:#55518a"> Benchmark 2: <small> All HIV+ children, adolescents, and caregivers in the household with a viral load result documented in the medical record and/or laboratory information systems (LIS) have been virally suppressed for the last 12 months. </small></h3>
+
+                          </th>
+                          <td>                            
+
+                              <div class="form-check form-check-inline">
+                                  <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="option1">
+                                  <label class="form-check-label" for="inlineRadio1">Yes</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                  <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="option2">
+                                  <label class="form-check-label" for="inlineRadio2">No</label>
+                                </div></td>
+                          <td>
+                              <div class="form-check form-check-inline">
+                                  <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="option1">
+                                  <label class="form-check-label" for="inlineRadio1">Yes</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                  <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="option2">
+                                  <label class="form-check-label" for="inlineRadio2">No</label>
+                                </div></td>
+                          </td>
+                          <td>
+                              <div class="form-check form-check-inline">
+                                  <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="option1">
+                                  <label class="form-check-label" for="inlineRadio1">Yes</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                  <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="option2">
+                                  <label class="form-check-label" for="inlineRadio2">No</label>
+                                </div></td>
+                          </td>
+                        </tr>
+                        
+                      </tbody>
+
+                  </table> {% endcomment %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                <!-- begin wizard step-1 -->
+                <div class="wizard-step-1">
+                    <div class="form-group">                    
+                        <table class="table table-condensed table-hover table-responsive table-striped">
+                            <thead>
+                                <tr>
+                                  <th scope="col">Healthy</th>
+                                  <th scope="col">Month 1</th>
+                                  <th scope="col">Month 2</th>
+                                  <th scope="col">Month 3</th>
+                                </tr>
+                              </thead>
+                            <tbody>
+                                <th scope="row">
+                                    <h3 style="margin-top: 0;color:#55518a"> Benchmark 1: <small>All children, adolescents, and caregivers in the household have known HIV status or a test is not required based on risk assessment </small></h3>
+                                    <h3 style="margin-top: 0;color:#55518a"> Benchmark 2: <small> All HIV+ children, adolescents, and caregivers in the household with a viral load result documented in the medical record and/or laboratory information systems (LIS) have been virally suppressed for the last 12 months.  </small></h3>
+                                </th>
+                                <td>                            
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="option1">
+                                        <label class="form-check-label" for="inlineRadio1">Yes</label>
+                                      </div>
+                                      <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="option2">
+                                        <label class="form-check-label" for="inlineRadio2">No</label>
+                                      </div></td>
+                                <td>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="option1">
+                                        <label class="form-check-label" for="inlineRadio1">Yes</label>
+                                      </div>
+                                      <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="option2">
+                                        <label class="form-check-label" for="inlineRadio2">No</label>
+                                      </div></td>
+                                </td>
+                                <td>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="option1">
+                                        <label class="form-check-label" for="inlineRadio1">Yes</label>
+                                      </div>
+                                      <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="option2">
+                                        <label class="form-check-label" for="inlineRadio2">No</label>
+                                      </div></td>
+                                </td>
+                            </tbody>
+                        </table> 
+
+                        <p>&nbsp;</p>
+
+                    </div>
+
+
+                </div>
+                <!-- end wizard step-1 -->
+                <!-- begin wizard step-2 -->
+                <div class="wizard-step-2">
+                    <h3 style="margin-top: 0;color:#55518a">Stable</h3>
+                    <div class="form-group">
+                        <table class="table table-condensed table-hover table-responsive table-striped">
+                            <thead>
+                                <tr>
+                                  <th scope="col">Healthy</th>
+                                  <th scope="col">Month 1</th>
+                                  <th scope="col">Month 2</th>
+                                  <th scope="col">Month 3</th>
+                                </tr>
+                              </thead>
+                            <tbody>
+                                <th scope="row">
+                                    <h3 style="margin-top: 0;color:#55518a"> Benchmark 1: <small>All children, adolescents, and caregivers in the household have known HIV status or a test is not required based on risk assessment </small></h3>
+                                </th>
+                                <td>                            
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="option1">
+                                        <label class="form-check-label" for="inlineRadio1">Yes</label>
+                                      </div>
+                                      <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="option2">
+                                        <label class="form-check-label" for="inlineRadio2">No</label>
+                                      </div></td>
+                                <td>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="option1">
+                                        <label class="form-check-label" for="inlineRadio1">Yes</label>
+                                      </div>
+                                      <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="option2">
+                                        <label class="form-check-label" for="inlineRadio2">No</label>
+                                      </div></td>
+                                </td>
+                                <td>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="option1">
+                                        <label class="form-check-label" for="inlineRadio1">Yes</label>
+                                      </div>
+                                      <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="option2">
+                                        <label class="form-check-label" for="inlineRadio2">No</label>
+                                      </div></td>
+                                </td>
+                            </tbody>
+                        </table>
+                        <p>&nbsp;</p>
+
+                    </div>
+                </div>
+                <!-- end wizard step-2 -->
+        
+                   
+                <!-- begin wizard step-3 -->
+                <div class="wizard-step-3">
+                    <h3 style="margin-top: 0;color:#55518a">Safe</h3>
+                    <table class="table table-condensed table-hover table-responsive table-striped">
+                        <thead>
+                            <tr>
+                              <th scope="col">Healthy</th>
+                              <th scope="col">Month 1</th>
+                              <th scope="col">Month 2</th>
+                              <th scope="col">Month 3</th>
+                            </tr>
+                          </thead>
+                        <tbody>
+                            <th scope="row">
+                                <h3 style="margin-top: 0;color:#55518a"> Benchmark 1: <small>All children, adolescents, and caregivers in the household have known HIV status or a test is not required based on risk assessment </small></h3>
+                            </th>
+                            <td>                            
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="option1">
+                                    <label class="form-check-label" for="inlineRadio1">Yes</label>
+                                  </div>
+                                  <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="option2">
+                                    <label class="form-check-label" for="inlineRadio2">No</label>
+                                  </div></td>
+                            <td>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="option1">
+                                    <label class="form-check-label" for="inlineRadio1">Yes</label>
+                                  </div>
+                                  <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="option2">
+                                    <label class="form-check-label" for="inlineRadio2">No</label>
+                                  </div></td>
+                            </td>
+                            <td>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="option1">
+                                    <label class="form-check-label" for="inlineRadio1">Yes</label>
+                                  </div>
+                                  <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="option2">
+                                    <label class="form-check-label" for="inlineRadio2">No</label>
+                                  </div></td>
+                            </td>
+                        </tbody>
+                    </table>
+
+                    <p>&nbsp;</p>
+                </div>
+                <!-- end wizard step-3 -->
+                
+
+
+                 <!-- begin wizard step-4 -->
+                <div class="wizard-step-4">
+                    <h3 style="margin-top: 0;color:#55518a">Schooled</h3>
+                    <div class="form-group">
+                        <table class="table table-condensed table-hover table-responsive table-striped">
+                            <thead>
+                                <tr>
+                                  <th scope="col">Healthy</th>
+                                  <th scope="col">Month 1</th>
+                                  <th scope="col">Month 2</th>
+                                  <th scope="col">Month 3</th>
+                                </tr>
+                              </thead>
+                            <tbody>
+                                <th scope="row">
+                                    <h3 style="margin-top: 0;color:#55518a"> Benchmark 1: <small>All children, adolescents, and caregivers in the household have known HIV status or a test is not required based on risk assessment </small></h3>
+                                </th>
+                                <td>                            
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="option1">
+                                        <label class="form-check-label" for="inlineRadio1">Yes</label>
+                                      </div>
+                                      <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="option2">
+                                        <label class="form-check-label" for="inlineRadio2">No</label>
+                                      </div></td>
+                                <td>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="option1">
+                                        <label class="form-check-label" for="inlineRadio1">Yes</label>
+                                      </div>
+                                      <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="option2">
+                                        <label class="form-check-label" for="inlineRadio2">No</label>
+                                      </div></td>
+                                </td>
+                                <td>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="option1">
+                                        <label class="form-check-label" for="inlineRadio1">Yes</label>
+                                      </div>
+                                      <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="option2">
+                                        <label class="form-check-label" for="inlineRadio2">No</label>
+                                      </div></td>
+                                </td>
+                            </tbody>
+                        </table>  
+
+                        <p>&nbsp;</p>
+
+                    </div>
+                </div>
+                <!-- end wizard step-4 -->
+
+
+            </div>
+
+            <div class="panel-body panel-form">
+                <div class="form-group">
+                    <label class="control-label col-md-4 col-sm-4"></label>
+                    <div class="col-md-6 col-sm-6">
+                        <button id="mysubmit-wellbeingadolescent" type="submit"
+                            class="btn btn-primary">Submit</button>
+                        <a href="javascript:history.go(-1)" class="btn btn-white">Cancel</a>
+                    </div>
+                </div>
+            </div>
+
+        </form>
+    </div>
+    
+</div>
+</div>
+<!-- end row -->
+
+{% endblock %}
+<!-- End content area -->
+
+{% block lazy_javascript_code %}
+<script src="{% static 'plugins/parsley/dist/parsley.js' %}"></script>
+<script src="{% static 'plugins/bootstrap-wizard/js/bwizard.js' %}"></script>   
+<script src="{% static 'plugins/bootstrap-multiselect/dist/js/bootstrap-multiselect.js' %}"></script>
+<script src="{% static 'js/apps.js' %}"></script>
+<script src="{% static 'js/form-wizards.js' %}"></script>
+
+<script>
+jQuery(document).ready(function() 
+{
+    $('html,body').scrollTop(0);
+    FormWizardValidation.init();
+});
+</script>
+{% endblock %}
