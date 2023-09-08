@@ -1,0 +1,752 @@
+{% extends 'base.html' %}
+{% load app_filters %}
+{% load static %}
+{% block page_title %} Case Plan Template {% endblock %}
+{% block style_code %}
+<link href="{% static 'plugins/parsley/src/parsley.css' %}" rel="stylesheet" />
+<link href="{% static 'plugins/bootstrap-datepicker/css/datepicker3.css' %}" rel="stylesheet" />
+<link href="{% static 'plugins/bootstrap-wizard/css/bwizard.min.css' %}" rel="stylesheet" />
+<link href="{% static 'plugins/bootstrap-multiselect/dist/css/bootstrap-multiselect.css' %}" rel="stylesheet">
+<link href="{% static 'css/jquery.tagit.css' %}" rel="stylesheet">
+<link href="{% static 'css/bootstrap-table.min.css' %}" rel="stylesheet" />
+<style type="text/css">
+.dialog_paragraph {
+  color: #f00;
+}
+
+.table_data {
+  display: none;
+}
+
+.container {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.td_style {
+  /* color: #000000;*/
+  color: #0057e7;
+}
+</style>
+{% endblock %}
+
+{% block javascript_code%}
+{% endblock javascript_code%}
+
+{% block primary %}
+
+<!-- begin breadcrumb -->
+<ol class="breadcrumb pull-right">
+	<li><a href="#">Home</a></li>
+	<li class="active">Forms</li>
+</ol>
+<!-- end breadcrumb -->
+
+<!-- begin page-header -->
+<!-- {% for data in init_data %} -->
+
+	<h1 class="page-header">Forms <small>Case Plan Template Monitoring <b> {% for cgvr in care_givers %} {{cgvr}} {% endfor %}
+         <!-- | {{ data.first_name }} {{ data.surname }} | {{ data.sex_id|gen_value:vals }} | {% if data.date_of_birth|gen_age == 0 %}
+                            UNDER 1 YEAR
+                        {% else %}
+                            {{ data.date_of_birth|gen_age }} YRS 
+                        {% endif %} -->
+                    </b></small></h1>
+
+<!-- {% endfor %} -->
+<!-- end page-header -->
+
+{% if messages %}
+    {% for message in messages %}
+    {% if 'error' in message.tags %}
+        <div id="messages" class="alert alert-danger fade in">
+        <span class="close" data-dismiss="alert">×</span>
+        <i class="fa fa-info fa-2x pull-left"></i>
+    {% else %}
+        <div id="messages" class="alert alert-success fade in">
+        <span class="close" data-dismiss="alert">×</span>
+        <i class="fa fa-check fa-2x pull-left"></i>
+    {% endif %}    
+        <p>{{ message }}</p>
+    </div>
+   {% endfor %}
+{% endif %}
+
+
+<div id="success_message" class="alert alert-success fade in" style="display: none;">
+    <!--<span class="close" data-dismiss="alert">×</span>-->
+    <button type="button" class="close" data-hide="alert">&times;</button>
+    <i class="fa fa-check fa-2x pull-left"></i>
+    <p id="msg"></p>
+</div>
+
+<!-- begin row -->
+<div id='case_details' class="row">
+
+	<!-- begin col-12 -->
+    <div class="col-md-12">
+    	<!-- begin panel -->
+        <div class="panel panel-inverse">
+            <div class="panel-heading">
+                <div class="panel-heading-btn">
+                    <a href="#" class="btn btn-xs btn-icon btn-circle btn-warning" data-click="panel-expand"><i class="fa fa-minus"></i></a>
+                    <a href="#" class="btn btn-xs btn-icon btn-circle btn-default" data-click="panel-collapse"><i class="fa fa-times"></i></a>
+                </div>
+                <h4 class="panel-title"> Case Plan Monitoring</h4>
+            </div>
+            <div class="panel-body">        	
+					<div id="wizard-f1a">
+
+						<!-- begin wizard step-1 -->
+						<div class="wizard-step-1">
+                            <fieldset>
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Domain</th><th>Goal</th><th>Needs / Gaps</th>
+                                            <th>Priority Actions</th><th>Services</th>
+                                            <th>Responsible</th><th>Completion Date</th>
+                                            <th>Results</th><th>Reasons</th>
+                                        </tr>
+                                    </thead>
+
+                                {% for one_cpt_event in caseplan_events %}
+                                    {% if one_cpt_event and one_cpt_event.event_id == cp_id %}
+                                       {% if one_cpt_event.event_healthy %}
+                                       <tr bgcolor="#f0f3f5">
+                                           <td colspan="9"><b>HEALTHY </b></td>
+                                        </tr>
+                                        {% for one_healthy in one_cpt_event.event_healthy %}
+                                            <tr>
+                                                <td></td>
+                                               <td>{{ one_healthy.ev_goal }}</td>
+                                               <td>{{ one_healthy.ev_need }}</td>
+                                               <td>{{ one_healthy.ev_priority }}</td>
+                                               <td>{{ one_healthy.ev_services }}</td>
+                                               <td>{{ one_healthy.ev_responsible }}</td>
+                                               <td>{{ one_healthy.ev_completion_date}}</td>
+                                               <td>{{ one_healthy.ev_results }}</td>
+                                               <td>{{ one_healthy.ev_reasons }}</td>
+                                               <td>
+                                                   <a href="#monitor-caseplan-{{ one_healthy.cid }}" class="btn btn-sm btn-danger btn-outline" data-toggle="modal">Monitor &nbsp;&nbsp;</a>
+                                                <!--Confirm form1a delete Modal -->
+                                                  <div class="modal fade" id="monitor-caseplan-{{ one_healthy.cid }}" style="margin-left: auto; margin-right: auto; width: 90%;" role="dialog">
+                                                    <div class="modal-dialog modal-sm">
+
+                                                      <!-- Modal content-->
+                                                      <div class="modal-content">
+                                                        <div class="modal-header">
+                                                          <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                                          <h4 class="modal-title">Monitor - {{ one_cpt_event.event_id }}</h4>
+                                                        </div>
+                                                        <form id="cpt-monitoring-{{ one_healthy.cid }}" class="cptManage" method="post" action=".">
+                                                        {% csrf_token %}
+                                                        <input type="hidden" name="item_id" value="{{ one_healthy.cid }}">
+                                                        <div class="modal-body">
+                                                          <div id="msg-{{ one_healthy.cid }}"></div>                                                         
+                                                          <table class="table">
+                                                              <tr><th>Item</th><th>Value</th></tr>
+                                                              <tr><td>Domain</td><td>Healthy</td></tr>
+                                                              <tr><td>Goal</td><td>{{ one_healthy.ev_goal }} - {{ one_healthy.ev_goal|gen_value:vals }}</td></tr>
+                                                              <tr><td>Needs / Gaps</td><td>{{ one_healthy.ev_need }} - {{ one_healthy.ev_need|gen_value:vals }}</td></tr>
+                                                              <tr><td>Priority Actions</td><td>{{ one_healthy.ev_priority }} - {{ one_healthy.ev_priority|gen_value:vals }}</td></tr>
+                                                              <tr><td>Services</td><td>{{ one_healthy.ev_services }} - {{ one_healthy.ev_services|gen_value:vals }}</td></tr>
+                                                              <tr><td>Person Responsible</td><td>{{ one_healthy.ev_responsible }}</td></tr>
+                                                              <tr><td>Date to be Completed</td><td>{{ one_healthy.ev_completion_date }}</td></tr>
+                                                              <tr><td>Actual Date of Completion</td>
+                                                                <td><input type="text" name="CPT_ACTUAL_DATE_COMPLETION" placeholder="Actual date of completion" class="form-control cpt_date" id="CPT_ACTUAL_DATE_COMPLETION" value="{{ one_healthy.ev_actual_completion_date }}" required> </td></tr>
+                                                              <tr><td>Results</td>
+                                                                  <td>
+                                                              <select name="CPT_RESULTS" class="form-control" id="id_CPT_RESULTS">
+                                                                  <option value="">Please Select</option>
+                                                                  <option value="AC" {% if one_healthy.ev_results == 'AC' %}selected{% endif %}>Achieved</option>
+                                                                  <option value="NA" {% if one_healthy.ev_results == 'NA' %}selected{% endif %}>Not Achieved</option>
+                                                                </select>
+                                                                  </td>
+                                                              </tr>
+                                                              <tr><td>Reasons</td>
+                                                                <td><input type="text" name="CPT_REASONS" placeholder="State Reasons" class="form-control" required id="id_CPT_REASONS" value="{{ one_healthy.ev_reasons }}"></td></tr>
+                                                              <tr><td></td><td></td></tr>
+                                                          </table>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                          <button type="submit" id="cpt-mnt-{{ one_healthy.cid }}" class="btn btn-default btn-primary">Submit Monitoring</button>
+                                                          <button type="button" class="btn btn-default btn-default" data-dismiss="modal">Cancel</button>
+                                                        </div>
+                                                        </form>
+                                                      </div>
+
+                                                    </div>
+                                                  </div>
+                                               </td>
+                                            </tr>
+                                            {% endfor %}
+                                       {% endif %}
+                                       {% if one_cpt_event.event_stable %}
+                                       <tr bgcolor="#f0f3f5">
+                                           <td colspan="9"><b>STABLE</b></td>
+                                        </tr>
+                                        {% for one_stable in one_cpt_event.event_stable %}
+                                            <tr>
+                                                <td></td>
+                                               <td>{{ one_stable.ev_goal }}</td>
+                                               <td>{{ one_stable.ev_need }}</td>
+                                               <td>{{ one_stable.ev_priority }}</td>
+                                               <td>{{ one_stable.ev_services }}</td>
+                                               <td>{{ one_stable.ev_responsible }}</td>
+                                               <td>{{ one_stable.ev_completion_date}}</td>
+                                               <td>{{ one_stable.ev_results }}</td>
+                                               <td>{{ one_stable.ev_reasons }}</td>
+                                               <td>
+                                                   <a href="#monitor-caseplan-{{ one_stable.cid }}" class="btn btn-sm btn-danger btn-outline" data-toggle="modal">Monitor &nbsp;&nbsp;</a>
+                                                <!--Confirm form1a delete Modal -->
+                                                  <div class="modal fade" id="monitor-caseplan-{{ one_stable.cid }}" style="margin-left: auto; margin-right: auto; width: 90%;" role="dialog">
+                                                    <div class="modal-dialog modal-sm">
+
+                                                      <!-- Modal content-->
+                                                      <div class="modal-content">
+                                                        <div class="modal-header">
+                                                          <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                                          <h4 class="modal-title">Monitor - {{ one_cpt_event.event_id }}</h4>
+                                                        </div>
+                                                        <form id="cpt-monitoring-{{ one_stable.cid }}" class="cptManage" method="post" action=".">
+                                                        {% csrf_token %}
+                                                        <input type="hidden" name="item_id" value="{{ one_stable.cid }}">
+                                                        <div class="modal-body">
+                                                          <table class="table">
+                                                              <tr><th>Item</th><th>Value</th></tr>
+                                                              <tr><td>Domain</td><td>Stable</td></tr>
+                                                              <tr><td>Goal</td><td>{{ one_stable.ev_goal }} - {{ one_stable.ev_goal|gen_value:vals }}</td></tr>
+                                                              <tr><td>Needs / Gaps</td><td>{{ one_stable.ev_need }} - {{ one_stable.ev_need|gen_value:vals }}</td></tr>
+                                                              <tr><td>Priority Actions</td><td>{{ one_stable.ev_priority }} - {{ one_stable.ev_priority|gen_value:vals }}</td></tr>
+                                                              <tr><td>Services</td><td>{{ one_stable.ev_services }} - {{ one_stable.ev_services|gen_value:vals }}</td></tr>
+                                                              <tr><td>Person Responsible</td><td>{{ one_stable.ev_responsible }}</td></tr>
+                                                              <tr><td>Date to be Completed</td><td>{{ one_stable.ev_completion_date }}</td></tr>
+                                                              <tr><td>Actual Date of Completion</td>
+                                                                <td><input type="text" name="CPT_ACTUAL_DATE_COMPLETION" placeholder="Actual date of completion" class="form-control cpt_date" id="CPT_ACTUAL_DATE_COMPLETION" value="{{ one_stable.ev_actual_completion_date }}" required> </td></tr>
+                                                              <tr><td>Results</td>
+                                                                  <td>
+                                                              <select name="CPT_RESULTS" class="form-control" id="id_CPT_RESULTS">
+                                                                  <option value="">Please Select</option>
+                                                                  <option value="AC" {% if one_stable.ev_results == 'AC' %}selected{% endif %}>Achieved</option>
+                                                                  <option value="NA" {% if one_stable.ev_results == 'NA' %}selected{% endif %}>Not Achieved</option>
+                                                                </select>
+                                                                  </td>
+                                                              </tr>
+                                                              <tr><td>Reasons</td>
+                                                                <td><input type="text" name="CPT_REASONS" placeholder="State Reasons" class="form-control" required id="id_CPT_REASONS" value="{{ one_stable.ev_reasons }}"></td></tr>
+                                                              <tr><td></td><td></td></tr>
+                                                          </table>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                          <button type="submit" id="cpt-mnt-{{ one_stable.cid }}" class="btn btn-default btn-primary">Submit Monitoring</button>
+                                                          <button type="button" class="btn btn-default btn-default" data-dismiss="modal">Cancel</button>
+                                                        </div>
+                                                      </div>
+                                                      </form>
+
+                                                    </div>
+                                                  </div>
+                                               </td>
+                                            </tr>
+                                            {% endfor %}
+                                       {% endif %}
+                                       {% if one_cpt_event.event_safe %}
+                                       <tr bgcolor="#f0f3f5">
+                                           <td colspan="9"><b>SAFE</b></td>
+                                        </tr>
+                                        {% for one_safe in one_cpt_event.event_safe %}
+                                            <tr>
+                                                <td></td>
+                                               <td>{{ one_safe.ev_goal }}</td>
+                                               <td>{{ one_safe.ev_need }}</td>
+                                               <td>{{ one_safe.ev_priority }}</td>
+                                               <td>{{ one_safe.ev_services }}</td>
+                                               <td>{{ one_safe.ev_responsible }}</td>
+                                               <td>{{ one_safe.ev_completion_date}}</td>
+                                               <td>{{ one_safe.ev_results }}</td>
+                                               <td>{{ one_safe.ev_reasons }}</td>
+                                               <td>
+                                                   <a href="#monitor-caseplan-{{ one_safe.cid }}" class="btn btn-sm btn-danger btn-outline" data-toggle="modal">Monitor &nbsp;&nbsp;</a>
+                                                <!--Confirm form1a delete Modal -->
+                                                  <div class="modal fade" id="monitor-caseplan-{{ one_safe.cid }}" style="margin-left: auto; margin-right: auto; width: 90%;" role="dialog">
+                                                    <div class="modal-dialog modal-sm">
+
+                                                      <!-- Modal content-->
+                                                      <div class="modal-content">
+                                                        <div class="modal-header">
+                                                          <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                                          <h4 class="modal-title">Monitor - {{ one_cpt_event.event_id }}</h4>
+                                                        </div>
+                                                        <form id="cpt-monitoring-{{ one_safe.cid }}" class="cptManage" method="post" action=".">
+                                                        {% csrf_token %}
+                                                        <input type="hidden" name="item_id" value="{{ one_safe.cid }}">
+                                                        <div class="modal-body">
+                                                          <table class="table">
+                                                              <tr><th>Item</th><th>Value</th></tr>
+                                                              <tr><td>Domain</td><td>Safe</td></tr>
+                                                              <tr><td>Goal</td><td>{{ one_safe.ev_goal }} - {{ one_safe.ev_goal|gen_value:vals }}</td></tr>
+                                                              <tr><td>Needs / Gaps</td><td>{{ one_safe.ev_need }} - {{ one_safe.ev_need|gen_value:vals }}</td></tr>
+                                                              <tr><td>Priority Actions</td><td>{{ one_safe.ev_priority }} - {{ one_safe.ev_priority|gen_value:vals }}</td></tr>
+                                                              <tr><td>Services</td><td>{{ one_safe.ev_services }} - {{ one_safe.ev_services|gen_value:vals }}</td></tr>
+                                                              <tr><td>Person Responsible</td><td>{{ one_safe.ev_responsible }}</td></tr>
+                                                              <tr><td>Date to be Completed</td><td>{{ one_safe.ev_completion_date }}</td></tr>
+                                                              <tr><td>Actual Date of Completion</td>
+                                                                <td><input type="text" name="CPT_ACTUAL_DATE_COMPLETION" placeholder="Actual date of completion" class="form-control cpt_date" id="CPT_ACTUAL_DATE_COMPLETION" value="{{ one_safe.ev_actual_completion_date }}" required> </td></tr>
+                                                              <tr><td>Results</td>
+                                                                  <td>
+                                                              <select name="CPT_RESULTS" class="form-control" id="id_CPT_RESULTS">
+                                                                  <option value="">Please Select</option>
+                                                                  <option value="AC" {% if one_safe.ev_results == 'AC' %}selected{% endif %}>Achieved</option>
+                                                                  <option value="NA" {% if one_safe.ev_results == 'NA' %}selected{% endif %}>Not Achieved</option>
+                                                                </select>
+                                                                  </td>
+                                                              </tr>
+                                                              <tr><td>Reasons</td>
+                                                                <td><input type="text" name="CPT_REASONS" placeholder="State Reasons" class="form-control" required id="id_CPT_REASONS" value="{{ one_safe.ev_reasons }}"></td></tr>
+                                                              <tr><td></td><td></td></tr>
+                                                          </table>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                          <button type="submit" id="cpt-mnt-{{ one_safe.cid }}" class="btn btn-default btn-primary">Submit Monitoring</button>
+                                                          <button type="button" class="btn btn-default btn-default" data-dismiss="modal">Cancel</button>
+                                                        </div>
+                                                      </div>
+                                                  </form>
+                                                    </div>
+                                                  </div>
+                                               </td>
+                                            </tr>
+                                            {% endfor %}
+                                       {% endif %}
+                                       {% if one_cpt_event.event_school %}
+                                       <tr bgcolor="#f0f3f5">
+                                            <td colspan="9"><b>SCHOOLED</b></td>
+                                       </tr>
+                                            {% for one_school in one_cpt_event.event_school %}
+                                            <tr>
+                                                <td></td>
+                                               <td>{{ one_school.ev_goal }}</td>
+                                               <td>{{ one_school.ev_need }}</td>
+                                               <td>{{ one_school.ev_priority }}</td>
+                                               <td>{{ one_school.ev_services }}</td>
+                                               <td>{{ one_school.ev_responsible }}</td>
+                                               <td>{{ one_school.ev_completion_date}}</td>
+                                               <td>{{ one_school.ev_results }}</td>
+                                               <td>{{ one_school.ev_reasons }}</td>
+                                               <td>
+                                                   <a href="#monitor-caseplan-{{ one_school.cid }}" class="btn btn-sm btn-danger btn-outline" data-toggle="modal">Monitor &nbsp;&nbsp;</a>
+                                                <!--Confirm form1a delete Modal -->
+                                                  <div class="modal fade" id="monitor-caseplan-{{ one_school.cid }}" style="margin-left: auto; margin-right: auto; width: 90%;" role="dialog">
+                                                    <div class="modal-dialog modal-sm">
+
+                                                      <!-- Modal content-->
+                                                      <div class="modal-content">
+                                                        <div class="modal-header">
+                                                          <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                                          <h4 class="modal-title">Monitor - {{ one_cpt_event.event_id }}</h4>
+                                                        </div>
+                                                        <form id="cpt-monitoring-{{ one_school.cid }}" class="cptManage" method="post" action=".">
+                                                        {% csrf_token %}
+                                                        <input type="hidden" name="item_id" value="{{ one_school.cid }}">
+                                                        <div class="modal-body">
+                                                          <table class="table">
+                                                              <tr><th>Item</th><th>Value</th></tr>
+                                                              <tr><td>Domain</td><td>Schooled</td></tr>
+                                                              <tr><td>Goal</td><td>{{ one_school.ev_goal }} - {{ one_school.ev_goal|gen_value:vals }}</td></tr>
+                                                              <tr><td>Needs / Gaps</td><td>{{ one_school.ev_need }} - {{ one_school.ev_need|gen_value:vals }}</td></tr>
+                                                              <tr><td>Priority Actions</td><td>{{ one_school.ev_priority }} - {{ one_school.ev_priority|gen_value:vals }}</td></tr>
+                                                              <tr><td>Services</td><td>{{ one_school.ev_services }} - {{ one_school.ev_services|gen_value:vals }}</td></tr>
+                                                              <tr><td>Person Responsible</td><td>{{ one_school.ev_responsible }}</td></tr>
+                                                              <tr><td>Date to be Completed</td><td>{{ one_school.ev_completion_date }}</td></tr>
+                                                              <tr><td>Actual Date of Completion</td>
+                                                                <td><input type="text" name="CPT_ACTUAL_DATE_COMPLETION" placeholder="Actual date of completion" class="form-control cpt_date" id="CPT_ACTUAL_DATE_COMPLETION" value="{{ one_school.ev_actual_completion_date }}" required> </td></tr>
+                                                              <tr><td>Results</td>
+                                                                  <td>
+                                                              <select name="CPT_RESULTS" class="form-control" id="id_CPT_RESULTS">
+                                                                  <option value="">Please Select</option>
+                                                                  <option value="AC" {% if one_school.ev_results == 'AC' %}selected{% endif %}>Achieved</option>
+                                                                  <option value="NA" {% if one_school.ev_results == 'NA' %}selected{% endif %}>Not Achieved</option>
+                                                                </select>
+                                                                  </td>
+                                                              </tr>
+                                                              <tr><td>Reasons</td>
+                                                                <td><input type="text" name="CPT_REASONS" placeholder="State Reasons" class="form-control" required id="id_CPT_REASONS" value="{{ one_school.ev_reasons }}"></td></tr>
+                                                              <tr><td></td><td></td></tr>
+                                                          </table>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                          <button type="submit"  id="cpt-mnt-{{ one_school.cid }}" class="btn btn-default btn-primary">Submit Monitoring</button>
+                                                          <button type="button" class="btn btn-default btn-default" data-dismiss="modal">Cancel</button>
+                                                        </div>
+                                                      </div>
+                                                      </form>
+                                                    </div>
+                                                  </div>
+                                               </td>
+                                            </tr>
+                                            {% endfor %}                                            
+                                        
+                                       {% endif %}
+                                    {% endif %}
+
+                                {% endfor %}
+                                </table>
+
+                        </fieldset>
+
+                    </div>
+            </div>
+            <a href="{% url 'ovc_view' id=child.id %}" class="badge badge-primary m-4"> Back to OVC</a>
+            <div class="badge pull-right m-4">Revised: May 2022</div>
+        </div>
+        <!-- end panel -->
+
+    </div>
+    <!-- end col-12 -->
+
+</div>
+<!-- end row -->
+
+<!-- begin row -->
+<div class="row">
+    <!-- begin col-12 -->
+    <div class="col-md-12">
+        <!-- begin panel -->
+        <div class="panel panel-info">
+            <div class="panel-heading">
+                <div class="panel-heading-btn">
+                    <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-default" data-click="panel-expand"><i class="fa fa-expand"></i></a>
+                    <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-warning" data-click="panel-collapse"><i class="fa fa-minus"></i></a>
+                </div>                          
+                <h4 class="panel-title"><b>Case Plan Template </b></h4>
+            </div>
+
+            <div class="panel-body">
+                <div  class="panel panel-inverse">
+                    <div id="case-events"  class="table-responsive">
+                        <table id="past_cpt_table" class="table table-condensed table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    
+                                    <th>#</th>
+                                    <th>Domain</th>
+                                    <th>Goal</th>
+                                    <th>Needs/Gaps</th>
+                                    <th>Priority Actions</th>
+                                    <th>Services</th>
+                                    <th>Person Responsible</th>
+                                    <th>Date Completed</th>
+                                    <th>Results</th>
+                                    <th>Reasons</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for one_cpt_event in caseplan_events %}
+                                    {% if one_cpt_event %}
+                                        <tr>
+                                            <td rowspan="4" style="text-align: center;vertical-align: middle;" width="40px" valign="center">{{forloop.counter}}</td>
+                                            <td style="text-align: center;vertical-align: middle;"><b>HEALTHY</b></td>
+                                            <td>
+                                                {% for one_healthy in one_cpt_event.event_healthy %}
+                                                    <small><b>({{forloop.counter}})</b></small> <small>{{one_healthy.ev_goal}}</small><hr class="m-t-0 m-b-0"/>
+                                                {% endfor %}
+                                            </td>
+                                            <td>
+                                                {% for one_healthy in one_cpt_event.event_healthy %}
+                                                    <small><b>({{forloop.counter}})</b></small> <small>{{one_healthy.ev_need}}</small><hr class="m-t-0 m-b-0"/>
+                                                {% endfor %}
+                                            </td>
+                                            <td>
+                                                {% for one_healthy in one_cpt_event.event_healthy %}
+                                                    <small><b>({{forloop.counter}})</b></small> <small>{{one_healthy.ev_priority}}</small><hr class="m-t-0 m-b-0"/>
+                                                {% endfor %}
+                                            </td>
+                                            <td>
+                                                {% for one_healthy in one_cpt_event.event_healthy %}
+                                                    <small><b>({{forloop.counter}})</b></small> <small>{{one_healthy.ev_services}}</small><hr class="m-t-0 m-b-0"/>
+                                                {% endfor %}
+                                            </td>
+                                            <td>
+                                                {% for one_healthy in one_cpt_event.event_healthy %}
+                                                    <small><b>({{forloop.counter}})</b></small> <small>{{one_healthy.ev_responsible}}</small><hr class="m-t-0 m-b-0"/>
+                                                {% endfor %}
+                                            </td>
+                                            <td>
+                                                {% for one_healthy in one_cpt_event.event_healthy %}
+                                                    <small><b>({{forloop.counter}})</b></small> <small>{{one_healthy.ev_completion_}}</small><hr class="m-t-0 m-b-0"/>
+                                                {% endfor %}
+                                            </td>
+                                            <td>
+                                                {% for one_healthy in one_cpt_event.event_healthy %}
+                                                    <small><b>({{forloop.counter}})</b></small> <small>{{one_healthy.ev_results}}</small><hr class="m-t-0 m-b-0"/>
+                                                {% endfor %}
+                                            </td>
+                                            <td>
+                                                {% for one_healthy in one_cpt_event.event_healthy %}
+                                                    <small><b>({{forloop.counter}})</b></small> <small>{{one_healthy.ev_reasons}}</small><hr class="m-t-0 m-b-0"/>
+                                                {% endfor %}
+                                            </td>
+                                            <td rowspan="4" style="text-align: center;vertical-align: middle;" width="40px" valign="center">
+                                                <a href="{% url 'update_caseplan' event_id=one_cpt_event.event_id ovcid=one_cpt_event.event_ovc %}" class="btn btn-sm btn-primary btn-outline btn-sm">Update &nbsp; </a><p></p>
+                                                <a href="{% url 'monitor_caseplan' event_id=one_cpt_event.event_id ovcid=one_cpt_event.event_ovc %}" class="btn btn-sm btn-primary btn-outline">Monitor</a><p></p>
+                                                <a href="#delete-caseplan-entry-{{ one_cpt_event.event_id }}" class="btn btn-sm btn-danger btn-outline" data-toggle="modal">Delete &nbsp;&nbsp;</a>
+                                                <!--Confirm form1a delete Modal -->
+                                                  <div class="modal fade" id="delete-caseplan-entry-{{ one_cpt_event.event_id }}" style="margin-left: auto; margin-right: auto; width: 90%;" role="dialog">
+                                                    <div class="modal-dialog modal-sm">
+
+                                                      <!-- Modal content-->
+                                                      <div class="modal-content">
+                                                        <div class="modal-header">
+                                                          <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                                          <h4 class="modal-title">Delete Case Plan Entry - {{ one_cpt_event.event_id }}</h4>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                          <p style="color: #ff0000; font-size: 16px;">Delete selected entry?</p>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                          <button type="button" class="btn btn-default btn-default" onclick="deleteCPTEntry({{one_cpt_event.event_ovc }}, '{{ one_cpt_event.event_id }}' )" data-dismiss="modal">Yes</button>
+                                                          <button type="button" class="btn btn-default btn-primary" data-dismiss="modal">Cancel</button>
+                                                        </div>
+                                                      </div>
+
+                                                    </div>
+                                                  </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="text-align: center;vertical-align: middle;"><b>STABLE</b></td>
+                                            <td>
+                                                {% for one_stable in one_cpt_event.event_stable %}
+                                                    <small><b>({{forloop.counter}})</b></small> <small>{{one_stable.ev_goal}}</small><hr class="m-t-0 m-b-0"/>
+                                                {% endfor %}
+                                            </td>
+                                            <td>
+                                                {% for one_stable in one_cpt_event.event_stable %}
+                                                    <small><b>({{forloop.counter}})</b></small> <small>{{one_stable.ev_need}}</small><hr class="m-t-0 m-b-0"/>
+                                                {% endfor %}
+                                            </td>
+                                            <td>
+                                                {% for one_stable in one_cpt_event.event_stable %}
+                                                    <small><b>({{forloop.counter}})</b></small> <small>{{one_stable.ev_priority}}</small><hr class="m-t-0 m-b-0"/>
+                                                {% endfor %}
+                                            </td>
+                                            <td>
+                                                {% for one_stable in one_cpt_event.event_stable %}
+                                                    <small><b>({{forloop.counter}})</b></small> <small>{{one_stable.ev_services}}</small><hr class="m-t-0 m-b-0"/>
+                                                {% endfor %}
+                                            </td>
+                                            <td>
+                                                {% for one_stable in one_cpt_event.event_stable %}
+                                                    <small><b>({{forloop.counter}})</b></small> <small>{{one_stable.ev_responsible}}</small><hr class="m-t-0 m-b-0"/>
+                                                {% endfor %}
+                                            </td>
+                                            <td>
+                                                {% for one_stable in one_cpt_event.event_stable %}
+                                                    <small><b>({{forloop.counter}})</b></small> <small>{{one_stable.ev_completion_date}}</small><hr class="m-t-0 m-b-0"/>
+                                                {% endfor %}
+                                            </td>
+                                            <td>
+                                                {% for one_stable in one_cpt_event.event_stable %}
+                                                    <small><b>({{forloop.counter}})</b></small> <small>{{one_stable.ev_results}}</small><hr class="m-t-0 m-b-0"/>
+                                                {% endfor %}
+                                            </td>
+                                            <td>
+                                                {% for one_stable in one_cpt_event.event_stable %}
+                                                    <small><b>({{forloop.counter}})</b></small> <small>{{one_stable.ev_reasons}}</small><hr class="m-t-0 m-b-0"/>
+                                                {% endfor %}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="text-align: center;vertical-align: middle;"><b>SAFE</b></td>
+                                            <td>
+                                                {% for one_safe in one_cpt_event.event_safe %}
+                                                    <small><b>({{forloop.counter}})</b></small> <small>{{one_safe.ev_goal}}</small><hr class="m-t-0 m-b-0"/>
+                                                {% endfor %}
+                                            </td>
+                                            <td>
+                                                {% for one_safe in one_cpt_event.event_safe %}
+                                                    <small><b>({{forloop.counter}})</b></small> <small>{{one_safe.ev_need}}</small><hr class="m-t-0 m-b-0"/>
+                                                {% endfor %}
+                                            </td>
+                                            <td>
+                                                {% for one_safe in one_cpt_event.event_safe %}
+                                                    <small><b>({{forloop.counter}})</b></small> <small>{{one_safe.ev_priority}}</small><hr class="m-t-0 m-b-0"/>
+                                                {% endfor %}
+                                            </td>
+                                            <td>
+                                                {% for one_safe in one_cpt_event.event_safe %}
+                                                    <small><b>({{forloop.counter}})</b></small> <small>{{one_safe.ev_services}}</small><hr class="m-t-0 m-b-0"/>
+                                                {% endfor %}
+                                            </td>
+                                            <td>
+                                                {% for one_safe in one_cpt_event.event_safe %}
+                                                    <small><b>({{forloop.counter}})</b></small> <small>{{one_safe.ev_responsible}}</small><hr class="m-t-0 m-b-0"/>
+                                                {% endfor %}
+                                            </td>
+                                            <td>
+                                                {% for one_safe in one_cpt_event.event_safe %}
+                                                    <small><b>({{forloop.counter}})</b></small> <small>{{one_safe.ev_completion_date}}</small><hr class="m-t-0 m-b-0"/>
+                                                {% endfor %}
+                                            </td>
+                                            <td>
+                                                {% for one_safe in one_cpt_event.event_safe %}
+                                                    <small><b>({{forloop.counter}})</b></small> <small>{{one_safe.ev_results}}</small><hr class="m-t-0 m-b-0"/>
+                                                {% endfor %}
+                                            </td>
+                                            <td>
+                                                {% for one_safe in one_cpt_event.event_safe %}
+                                                    <small><b>({{forloop.counter}})</b></small> <small>{{one_safe.ev_reasons}}</small><hr class="m-t-0 m-b-0"/>
+                                                {% endfor %}
+                                            </td>
+                                        </tr>
+                                        <tr style="border-bottom: 5px solid #aaa;">
+                                            <td style="text-align: center;vertical-align: middle;"><b>SCHOOLED</b></td>
+                                            <td>
+                                                {% for one_school in one_cpt_event.event_school %}
+                                                    <small><b>({{forloop.counter}})</b></small> <small>{{one_school.ev_goal}}</small><hr class="m-t-0 m-b-0"/>
+                                                {% endfor %}
+                                            </td>
+                                            <td>
+                                                {% for one_school in one_cpt_event.event_school %}
+                                                    <small><b>({{forloop.counter}})</b></small> <small>{{one_school.ev_need}}</small><hr class="m-t-0 m-b-0"/>
+                                                {% endfor %}
+                                            </td>
+                                            <td>
+                                                {% for one_school in one_cpt_event.event_school %}
+                                                    <small><b>({{forloop.counter}})</b></small> <small>{{one_school.ev_priority}}</small><hr class="m-t-0 m-b-0"/>
+                                                {% endfor %}
+                                            </td>
+                                            <td>
+                                                {% for one_school in one_cpt_event.event_school %}
+                                                    <small><b>({{forloop.counter}})</b></small> <small>{{one_school.ev_services}}</small><hr class="m-t-0 m-b-0"/>
+                                                {% endfor %}
+                                            </td>
+                                            <td>
+                                                {% for one_school in one_cpt_event.event_school %}
+                                                    <small><b>({{forloop.counter}})</b></small> <small>{{one_school.ev_responsible}}</small><hr class="m-t-0 m-b-0"/>
+                                                {% endfor %}
+                                            </td>
+                                            <td>
+                                                {% for one_school in one_cpt_event.event_school %}
+                                                    <small><b>({{forloop.counter}})</b></small> <small>{{one_school.ev_completion_date}}</small><hr class="m-t-0 m-b-0"/>
+                                                {% endfor %}
+                                            </td>
+                                            <td>
+                                                {% for one_school in one_cpt_event.event_school %}
+                                                    <small><b>({{forloop.counter}})</b></small> <small>{{one_school.ev_results}}</small><hr class="m-t-0 m-b-0"/>
+                                                {% endfor %}
+                                            </td>
+                                            <td>
+                                                {% for one_school in one_cpt_event.event_school %}
+                                                    <small><b>({{forloop.counter}})</b></small> <small>{{one_school.ev_reasons}}</small><hr class="m-t-0 m-b-0"/>
+                                                {% endfor %}
+                                            </td>
+                                        </tr>
+                                        {% endif %}
+                                    {% endfor %}
+                            </tbody>
+                        </table>
+
+
+
+
+
+                        <table class="table hidden">
+                            <thead>
+                                <tr>
+                                    <td>Event ID</td>
+                                    <td>Event Date</td>
+                                    <td># Services</td>
+                                    <td>Actions</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for one_cpt_event in caseplan_events %}
+                                    {% if one_cpt_event %}
+                                        <tr>
+                                            <td><b>{{one_cpt_event.event_id}}</b></td>
+                                            <td>{{one_cpt_event.event_date}}</td>
+                                            <td>{{one_cpt_event.event_services_count}}</td>
+                                            <td>
+                                                <a href="{% url 'update_caseplan' event_id=one_cpt_event.event_id ovcid=one_cpt_event.event_ovc %}" class="btn btn-sm btn-primary btn-outline">Update</a>
+                                                <a href="#" class="btn btn-sm btn-primary btn-outline">Monitor</a>
+                                                <a href="#" class="btn btn-sm btn-danger btn-outline">Delete</a>
+                                            </td>
+                                        </tr>
+                                    {% endif %}
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <br><br>                           
+                </div>
+            </div>
+
+        </div>
+        <!-- end panel -->
+    </div>
+    <!-- end col-12 -->
+</div>
+<!-- end row -->
+
+
+{% endblock %}
+
+{% block lazy_javascript_code %}
+<script src="{% static 'plugins/parsley/dist/parsley.js' %}"></script>
+<script src="{% static 'plugins/bootstrap-wizard/js/bwizard.js' %}"></script>	
+<script src="{% static 'plugins/bootstrap-multiselect/dist/js/bootstrap-multiselect.js' %}"></script>
+<script src="{% static 'js/apps.js' %}"></script>
+<script src="{% static 'js/form-wizards.js' %}"></script>
+<script src="{% static 'js/tag-it.js' %}"></script>
+<script src="{% static 'js/bootstrap-table.min.js' %}"></script>
+<script src="{% static 'js/bootstrap-table-locale-all.min.js' %}"></script>
+
+<script>
+jQuery(document).ready(function() {	
+	$('input[name=if_first_cpara],input[name=date_first_cpara]').removeAttr('required');
+    $('input[name=date_first_cpara]').attr('disabled', true);
+	$('input[name=if_first_cpara]').change(function(){
+		var valu = $(this).val();
+		if(valu === 'AYES'){
+			$('input[name=date_first_cpara]').val('');
+			$('input[name=date_first_cpara]').attr('disabled', true);
+		}else if(valu === 'ANNO'){
+			$('input[name=date_first_cpara]').val('');
+			$('input[name=date_first_cpara]').removeAttr('disabled');
+		}
+	});
+
+    // $('#CPT_ACTUAL_DATE_COMPLETION').removeAttr('required');
+    $('.cpt_date').datepicker({ endDate: '0d', format: 'dd-M-yyyy' });
+
+
+    $("form").submit(function(event){
+        event.preventDefault();
+        var form = $(this);
+        var item_id = form.find('input[name="item_id"]').val();
+        var data = form.serialize();
+        $.ajax({
+           type: "POST",
+           url: "{{ request.path }}",
+           data: data,
+           success: function(resp)
+           {
+               var message = resp.message;
+                $("#success_message").show();
+                $("#msg").html(message);
+                $("#monitor-caseplan-"+ item_id).modal("hide");
+                window.location.href = "{{ request.path }}";
+           },
+            error: function(){
+                $("#msg-"+ item_id).addClass( "alert alert-danger fade in" );
+                $("#msg-"+ item_id).html("Error while Monitoring Case Plan.");
+            }
+         });
+    });
+});
+</script>
+{% endblock %}
+	
