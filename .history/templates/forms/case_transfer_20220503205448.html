@@ -1,0 +1,300 @@
+{% extends 'base.html' %}
+{% load app_filters %} 
+{% load static %}
+{% block page_title %}Case Transfer Form{% endblock %}
+{% block style_code %}
+    <link href="{% static 'plugins/parsley/src/parsley.css' %}"
+          rel="stylesheet"/>
+    <link href="{% static 'plugins/bootstrap-datepicker/css/datepicker3.css' %}"
+          rel="stylesheet"/>
+    <link href="{% static 'plugins/bootstrap-wizard/css/bwizard.min.css' %}"
+          rel="stylesheet"/>
+    <link href="{% static 'plugins/bootstrap-multiselect/dist/css/bootstrap-multiselect.css' %}"
+          rel="stylesheet">
+    <style type="text/css">
+    .column {
+        float: left;
+        width: 33.33%;
+    }
+      
+    /* Clear floats after the columns */
+    .row:after {
+        content: "";
+        display: table;
+        clear: both;
+    }
+}
+    </style>
+{% endblock style_code %}
+{% block javascript_code %}
+{% endblock javascript_code %}  
+{% block primary %}
+    <!-- begin breadcrumb -->
+    {% if messages %}
+        {% for message in messages %}
+            {% if 'error' in message.tags %}
+                <div id="messages" class="alert alert-danger fade in">
+                    <span class="close" data-dismiss="alert">×</span>
+                    <i class="fa fa-info fa-2x pull-left"></i>
+                {% else %}
+                    <div id="messages" class="alert alert-success fade in">
+                        <span class="close" data-dismiss="alert">×</span>
+                        <i class="fa fa-check fa-2x pull-left"></i>
+                    {% endif %}
+                    <p>
+                        {{ message }}
+                    </p>
+                </div>
+            {% endfor %}
+        {% endif %} 
+        <div id="message"
+             class="alert alert-success fade in"
+             style="display: none">
+            <span class="close" data-dismiss="alert">×</span>
+            <i class="fa fa-check fa-2x pull-left"></i>
+        </div>
+        <!-- end page-header -->
+        {% comment %} <div id="messages" class="alert alert-danger fade in"  tabindex="1">
+            <span class="close" data-dismiss="alert">×</span>
+            <i class="fa fa-info fa-2x pull-left"></i>
+            <span class="invalid-form-message" id="invalid-form-message"></span>
+        </div> {% endcomment %}
+        <!-- begin row -->
+        <div id="case_details" class="row">
+            <!-- begin col-12 -->
+            <div class="col-md-12">
+                <!-- begin panel -->
+
+                <div class="panel panel-inverse">
+                    <div class="panel-heading">
+                        <div class="panel-heading-btn">
+                            <a href="#"
+                               class="btn btn-xs btn-icon btn-circle btn-warning"
+                               data-click="panel-expand"><i class="fa fa-minus"></i></a>
+                            <a href="#"
+                               class="btn btn-xs btn-icon btn-circle btn-default"
+                               data-click="panel-collapse"><i class="fa fa-times"></i></a>
+                        </div>
+                        <h4 class="panel-title">Case Transfer Form</h4>
+                    </div>
+                    <div class="panel-body">
+                        <fieldset>
+                            <!-- begin row -->
+                            <form action="."
+                                  method="post"
+                                  name="ovcreg_form"
+                                  id="checkboxform"
+                                  class="form-horizontal"
+                                  data-toggle="validator"
+                                  role="form"
+                                  data-parsley-validate>
+                                {% csrf_token %}
+                                <div class="row form-group browsers">
+                                    <div >
+                                        <table id="new-transfer" class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th style="margin-top:-9!important;">#</th>
+                                                    <th>Names</th>
+                                                    <th>Age</th>
+                                                    <th>Reason</th>
+                                                    <th>Follow Up Date</th>
+                                                    <th>Comment</th>
+                                                </tr>
+                                            </thead>
+                                            {% for hhmember in hhmembers %}
+                                                <tbody>
+                                                    <tr>
+                                                        <td>
+                                                            <input name="member_id" value="{{hhmember.person_id}}" type ="checkbox">
+                                                            <input name="member_id_check" value="{{hhmember.person_id}}" type ="hidden">
+                                                        </td>
+                                                        <td >{{ hhmember.person.first_name }} {{ hhmember.person.surname }}</td>
+                                                        <td>{{ hhmember.person.years }}yrs</td>
+                                                        <td >{{ case_transfer_form.REASON }}</td>
+                                                        <td>{{ case_transfer_form.FOLLOW_UP_DATE }}</td>
+                                                        <td>{{ case_transfer_form.COMMENT}}</td>
+                                                    </tr>
+                                                </tbody>
+                                            {% endfor %}
+                                        </table>
+                                        
+                                        <div class="row justify-content">
+                                            <div class="text-center col-sm-2">
+                                                <label for="transfer-date">Transfer Date:</label>
+                                                <div>{{ case_transfer_form.TRANSFER_DATE }}</div>    
+                                            <div>
+                                                <br>                                               
+                                                <br> 
+                                            <div class="text-center">
+                                                <label for="organization">Receiving Organization:</label>     
+                                                {% comment %} <input id="org" onkeyup="fetchOrgUnits()" type="string"> {% endcomment %}
+                                                {{ case_transfer_form.ORG_UNIT }}
+                                            </div>
+                                            <br>
+                                            <br>
+                                            <button class="btn btn-primary" type="submit" name="confirm" value="confirm">Confirm Transfer</button>
+                                            <p>
+                                                {% for organization in getOrg %}<li>{{ organization.name }}</li>{% endfor %}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>                         
+                        </fieldset>
+                    </div>
+                </div>
+          
+                <div>
+                    <div class="panel-body">
+                        <div class="panel panel-inverse">
+                    <div class="panel-heading">
+                        <div class="panel-heading-btn">
+                            <a href="#"
+                               class="btn btn-xs btn-icon btn-circle btn-warning"
+                               data-click="panel-expand"><i class="fa fa-minus"></i></a>
+                            <a href="#"
+                               class="btn btn-xs btn-icon btn-circle btn-default"
+                               data-click="panel-collapse"><i class="fa fa-times"></i></a>
+                        </div>
+                        <h4 class="panel-title">Transfered Household Members</h4>
+                    </div>
+                    <div class="panel-body">
+                        <div>
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th style="margin-top:-9!important;">#</th>
+                                        <th>Names</th>
+                                        <th>Age</th>
+                                        <th>Reason</th>
+                                        <th>Follow Up Date</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                {% for hhmember in hhmembers %}
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <input name="member_id" value="{{hhmember.person_id}}" type ="hidden">{{forloop.counter}}
+                                                <input name="member_id_check" value="{{hhmember.person_id}}" type ="hidden">
+                                            </td>
+                                            <td >{{ hhmember.person.first_name }} {{ hhmember.person.surname }}</td>
+                                            <td>{{ hhmember.person.years }}yrs</td>
+                                            <td >{{ case_transfer_form.REASON }}</td>
+                                            <td>{{ case_transfer_form.FOLLOW_UP_DATE }}</td>                                                <td>
+                                                <a href="{% url 'new_transfer_edit' id=hhmember.person_id %}">
+                                                    <button type="button" class="btn btn-primary"> <i class="fa fa-folder-open"></i> Edit Case Transfer Form</button>
+                                                </a>    
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                {% endfor %}
+                            </table>
+                        </div>
+                    </div>
+                </div>   
+            </div>
+        </div>
+    </div>
+    <!-- end row -->
+    <!-- end row -->
+
+{% endblock primary %}
+<!-- End content area -->
+{% block lazy_javascript_code %}
+    <script>
+        (function() {
+            $("select[name=REASON]").change( () => {
+              
+            console.log($('#new-transfer > tbody > tr > :nth-child(1) > input[name=member_id]:checked').val())
+
+            })
+               
+        
+        })()
+    </script>
+    <script src="jquery.js"></script>
+    <script src="parsley.min.js"></script>
+    <script src="{% static 'plugins/bootstrap-wizard/js/bwizard.js' %}"></script>
+    <script src="{% static 'js/form-wizards.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/bootstrap-multiselect.js' %}"></script>
+    <script>
+jQuery(document).ready(function() 
+{
+    $( "#org" ).change(function() {
+        alert( "Handler for .change() called." );
+      });
+    
+    $('html,body').scrollTop(0);
+    FormWizardValidation.init();
+    $('#form').parsley();
+
+ 
+    
+ 
+});
+
+$(function(){
+    var requiredCheckboxes = $('.browsers :checkbox[required]');
+    requiredCheckboxes.change(function(){
+        if(requiredCheckboxes.is(':checked')) {
+            requiredCheckboxes.removeAttr('required');
+        } else {
+            requiredCheckboxes.attr('required', 'required');
+        }
+    });
+});
+
+
+function fetchOrgUnits(){
+    alert("!!!!!!!!!!")
+    var values = {
+        'name':name,
+
+    }
+    $.ajax({
+        url: '{% url 'fetch_org_units' %}',
+        dataType: 'json',
+        method: 'GET',
+        data: values,
+        success: function(result)
+        {
+            if (result){
+                window.print();
+
+            }else{
+                console.log("Error!!!")
+
+            }
+            console.log("got 2");
+        },
+        error: function(xhr, status, error){
+            
+    }
+});
+
+
+
+
+
+
+    </script>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,44 @@
+{% if edit_transer %}
+                <div class="panel panel-inverse">
+                    
+                    <div class="panel-body">
+                        <fieldset>
+                            <legend class="pull-left width-full">
+                                Case Transfer Details
+                            </legend>
+                           
+                            <div>
+                                <h3>
+                                    Transfers
+                                </h3>
+                                <table class="table" border="1">
+                                    <thead>
+                                        <tr>
+                                            <th style="margin-top:-9!important;">#</th>
+                                            <th>Names</th>
+                                            <th>Age</th>
+                                            <th>Reason</th>
+                                            <th>Follow Up Date</th>
+                                            <th>Comment</th>
+                                        </tr>
+                                    </thead>
+                                    {% comment %} {% for hhmember in hhmembers %} {% endcomment %}
+                                        <tbody>
+                                            <tr>
+                                                <td>
+                                                    <input name="member_id" value="{{hhmember.person_id}}" type ="checkbox">
+                                                    <input name="member_id_check" value="{{hhmember.person_id}}" type ="hidden">
+                                                </td>
+                                                <td >{{ hhmember.person.first_name }} {{ hhmember.person.surname }}</td>
+                                                <td>{{ hhmember.person.years }}yrs</td>
+                                                <td >{{ case_transfer_form.TRANSFERREASONS }}</td>
+                                                <td>{{ case_transfer_form.FOLLOW_UP_DATE }}</td>
+                                                <td>{{ case_transfer_form.COMMENT }}</td>
+                                            </tr>
+                                        </tbody>
+                                    {% comment %} {% endfor %} {% endcomment %}
+                                </table>
+                            </div>
+                        </fieldset>
+                    </fieldset>
+                </div>
